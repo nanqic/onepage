@@ -1,12 +1,13 @@
 {
-  "name": "page-api",
+  "name": "onepage-server",
   "version": "1.0.0",
   "description": "",
-  "main": "index.js",
+  "main": "./bin/www",
   "type": "module",
   "scripts": {
-    "start": "npx nodemon app",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "start": "node ./bin/www",
+    "dev": "npx nodemon",
+    "test": "mocha ./tests"
   },
   "keywords": [],
   "author": "",
@@ -19,5 +20,9 @@
     "helmet": "^5.1.1",
     "sequelize": "^6.21.3",
     "sqlite3": "^5.0.11"
+  },
+  "devDependencies": {
+    "mocha": "^10.0.0",
+    "supertest": "^6.2.4"
   }
 }

@@ -2,16 +2,15 @@ import express from 'express'
 import helmet from 'helmet'
 import bodyParser from 'body-parser'
 import passwordRouter from './router/password.js'
-import appRouter from './router/app.js'
+import appRouter from './router/page.js'
 
 const app = express()
-const port = 8000
 app.use(helmet());
 app.use(bodyParser.json())
+
+// 纸张页面路由
+app.use('/', appRouter);
+// 纸张密码路由
 app.use('/password', passwordRouter);
 
-app.use('/', appRouter);
-
-app.listen(port, () => {
-    console.log(`OnePage app listening on port ${port}`)
-})
+export default app

@@ -1,5 +1,5 @@
 import express from 'express'
-import { initPassword, modifyPassword } from '../PageService.js';
+import { initPassword, modifyPassword } from '../service/password-service.js';
 
 const router = express.Router();
 

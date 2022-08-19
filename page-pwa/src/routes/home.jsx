@@ -10,6 +10,9 @@ export default function Home() {
     navigate(`${seourl}`, { replace: true });
   }
 
+  const handleKeyUp = (e) => {
+    console.log(e);
+  }
   return (
     <div className="container">
       <h1><Link to="/">One Page</Link></h1>
@@ -27,8 +30,8 @@ export default function Home() {
           Get started. <code>启用云上的一页纸</code>
         </p>
         <form className="form-wrapper">
-          <input onChange={e => setSeourl(e.target.value)} type="text" placeholder="不填写将随机创建" />
-          <button type="button" onClick={handleSubmit}>打开</button>
+          <input onChange={e => setSeourl(e.target.value)} onKeyUp={handleKeyUp} type="text" placeholder="不填写将随机创建" />
+          <button type="button" onClick={handleSubmit} >打开</button>
         </form>
       </main>
     </div>
