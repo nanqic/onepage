@@ -1,5 +1,5 @@
 import AlertDialog from './alert-dialog';
-
+import padlockUrl from "../assets/padlock.png"
 
 export default function Controls(props) {
   const logoutUrl = ""
@@ -9,7 +9,7 @@ export default function Controls(props) {
 
         <div id="ctrl-left">
           <a href={logoutUrl} id="padlock" title="退出登录">
-            <img src="/assets/padlock.png" alt='icon' width="8" height="13" />
+            <img src={padlockUrl} alt='icon' width="8" height="13" />
           </a>
           <a href={logoutUrl}>{props.hasPassword ? "移除" : "添加"}密码</a>
           <AlertDialog />
