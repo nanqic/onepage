@@ -1,8 +1,0 @@
-
-# dependencies
-/node_modules
-
-# sqlite database file
-*.db
-
-.DS_Store

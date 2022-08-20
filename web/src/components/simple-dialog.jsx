@@ -6,19 +6,14 @@ import DialogContent from '@mui/material/DialogContent';
 import DialogContentText from '@mui/material/DialogContentText';
 import DialogTitle from '@mui/material/DialogTitle';
 
-export default function AlertDialog(props) {
+export default function SimpleDialog(props) {
     const [open, setOpen] = React.useState(false);
 
     React.useEffect(() => {
         if (props.open) {
-            handleClickOpen()
+            setOpen(true);
         }
     }, [props])
-
-    const handleClickOpen = () => {
-        setOpen(true);
-    };
-
 
     const handleClose = () => {
         setOpen(false);
@@ -33,19 +28,16 @@ export default function AlertDialog(props) {
                 aria-describedby="alert-dialog-description"
             >
                 <DialogTitle id="alert-dialog-title">
-                    {"Use Google's location service?"}
+                    {props.title}
                 </DialogTitle>
                 <DialogContent>
                     <DialogContentText id="alert-dialog-description">
-                        Let Google help apps determine location. This means sending anonymous
-                        location data to Google, even when no apps are running.
+                        {props.content}
                     </DialogContentText>
                 </DialogContent>
                 <DialogActions>
-                    <Button onClick={handleClose}>Disagree</Button>
-                    <Button onClick={handleClose} autoFocus>
-                        Agree
-                    </Button>
+                    <Button onClick={handleClose}>取消</Button>
+                    <Button onClick={() => { props.confirm(); handleClose() }}>确定</Button>
                 </DialogActions>
             </Dialog>
         </div>

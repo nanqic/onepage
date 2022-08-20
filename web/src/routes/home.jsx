@@ -4,15 +4,16 @@ import { generateShortLink } from "../utils/shortUrl";
 
 export default function Home() {
   const [seourl, setSeourl] = useState(generateShortLink())
-  let navigate = useNavigate();
+  const navigate = useNavigate();
 
   const handleSubmit = () => {
     navigate(`${seourl}`, { replace: true });
   }
 
-  const handleKeyUp = (e) => {
-    console.log(e);
-  }
+    const handleKeyUp = (e) => {
+        if (e.key !== 'Enter') return
+        handleSubmit()
+    }
   return (
     <div className="container">
       <h1><Link to="/">One Page</Link></h1>
@@ -29,10 +30,10 @@ export default function Home() {
         <p className="description">
           Get started. <code>启用云上的一页纸</code>
         </p>
-        <form className="form-wrapper">
-          <input onChange={e => setSeourl(e.target.value)} onKeyUp={handleKeyUp} type="text" placeholder="不填写将随机创建" />
+        <div className="form-wrapper">
+          <input onChange={e => setSeourl(e.target.value)} onKeyUp={(e) => handleKeyUp(e)} type="text" placeholder="不填写将随机创建" />
           <button type="button" onClick={handleSubmit} >打开</button>
-        </form>
+        </div>
       </main>
     </div>
   )

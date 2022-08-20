@@ -7,38 +7,30 @@ import DialogContent from '@mui/material/DialogContent';
 import DialogContentText from '@mui/material/DialogContentText';
 import DialogTitle from '@mui/material/DialogTitle';
 import { useEffect } from 'react';
-import { setCookie } from 'react-use-cookie';
-
 
 export default function InputDialog(props) {
     const [open, setOpen] = React.useState(false);
-    const [password, setPassword] = React.useState("");
+    const [input, setInput] = React.useState("");
+    const { open: shouldOpen, title, content, submit: handleSubmit } = props
 
     const handleClose = () => {
         setOpen(false);
     };
 
-    const handleSubmit = () => {
-        setCookie(props.seourl, password)
-        setOpen(false);
-    };
     const handleChange = (e) => {
-        setPassword(window.btoa(e.target.value))
+        setInput(e.target.value)
     }
     useEffect(() => {
-        if (props.open) {
-            setOpen(true)
-        }
+        setOpen(shouldOpen)
     }, [props])
-
 
     return (
         <div>
             <Dialog open={open} onClose={handleClose}>
-                <DialogTitle>需要密码</DialogTitle>
+                <DialogTitle>{title}</DialogTitle>
                 <DialogContent>
                     <DialogContentText>
-                        这张纸被密码保护，请输入密码
+                        {content}
                     </DialogContentText>
                     <form>
                         <input type="text" hidden autoComplete="false" />
@@ -46,7 +38,7 @@ export default function InputDialog(props) {
                             autoFocus
                             margin="dense"
                             id="name"
-                            label="Input page password"
+                            label="请输入"
                             type="password"
                             autoComplete='current-password'
                             fullWidth
@@ -57,7 +49,7 @@ export default function InputDialog(props) {
                 </DialogContent>
                 <DialogActions>
                     <Button onClick={handleClose}>取消</Button>
-                    <Button onClick={handleSubmit}>提交</Button>
+                    <Button onClick={() => { handleSubmit(input); handleClose() }}>确定</Button>
                 </DialogActions>
             </Dialog>
         </div>
