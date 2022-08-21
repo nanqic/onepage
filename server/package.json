@@ -1,0 +1,28 @@
+{
+  "name": "onepage-server",
+  "version": "1.0.0",
+  "description": "",
+  "main": "./bin/www",
+  "type": "module",
+  "scripts": {
+    "start": "node ./bin/www",
+    "dev": "npx nodemon",
+    "test": "mocha ./tests"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "bcryptjs": "^2.4.3",
+    "body": "^5.1.0",
+    "body-parser": "^1.20.0",
+    "express": "^4.18.1",
+    "helmet": "^5.1.1",
+    "sequelize": "^6.21.3",
+    "sqlite3": "^5.0.11"
+  },
+  "devDependencies": {
+    "mocha": "^10.0.0",
+    "supertest": "^6.2.4"
+  }
+}
