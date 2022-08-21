@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 
 export default function Prompt() {
 
-    const [prompt, setPrompt] = useState('访问one page官网：https://www.onepage.com')
+    const [prompt, setPrompt] = useState(`访问One Page官网：${import.meta.env.VITE_APP_URL}`)
     const promptList = [
         '这页纸在你输入文字时会自动保存哦，右上角有保存进度小图标。',
         '纸张如果自动保存失败，当你关闭网页时会提示你还未保存完成。',

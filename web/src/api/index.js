@@ -6,10 +6,7 @@ export const getPageHead = async (seourl) => {
     const resp = await fetch(apiUrl + seourl, {
         method: 'HEAD'
     })
-    if (resp.status === 200) {
-        return true
-    }
-    return false
+    return resp.status === 200 ? true : false
 }
 
 export const getPage = async (seourl, secret) => {
@@ -37,26 +34,25 @@ export const createPage = async (seourl, value) => {
         },
         body: JSON.stringify(body)
     })
-    const respJson = await resp.json()
-    return respJson
+    return await resp.json()
 }
 
-export const changePage = async (seourl, secret, value) => {
-    const url = apiUrl + seourl
-    const data = {
-        content: value
+export const changePage = async (page) => {
+    const url = apiUrl + page.seourl
+    const header = {
+        'Content-Type': 'application/json',
+        'x-password': page.secret
+
     }
+    page.seourl = page.newSeourl
+    delete page.secret
+    delete page.newSeourl
     const resp = await fetch(url, {
         method: 'PUT',
-        headers: {
-            'Content-Type': 'application/json',
-            'x-password': secret
-
-        },
-        body: JSON.stringify(data)
+        headers: header,
+        body: JSON.stringify({...page})
     })
-    const respJson = await resp.json()
-    return respJson
+    return await resp.json()
 }
 
 
@@ -69,8 +65,7 @@ export const destroyPage = async (seourl, secret) => {
             'x-password': secret
         },
     })
-    const respJson = await resp.json()
-    return respJson
+    return await resp.json()
 }
 
 export const addPagePassword = async (seourl,secret)=>{

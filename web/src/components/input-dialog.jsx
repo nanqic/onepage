@@ -11,7 +11,7 @@ import { useEffect } from 'react';
 export default function InputDialog(props) {
     const [open, setOpen] = React.useState(false);
     const [input, setInput] = React.useState("");
-    const { open: shouldOpen, title, content, submit: handleSubmit } = props
+    const { open: shouldOpen, inputType, title, content, submit: handleSubmit } = props
 
     const handleClose = () => {
         setOpen(false);
@@ -39,7 +39,7 @@ export default function InputDialog(props) {
                             margin="dense"
                             id="name"
                             label="请输入"
-                            type="password"
+                            type={inputType}
                             autoComplete='current-password'
                             fullWidth
                             variant="standard"

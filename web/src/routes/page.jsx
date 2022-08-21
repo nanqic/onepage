@@ -18,6 +18,7 @@ export default function Page() {
 
   useEffect(() => {
     const initData = async () => {
+      // console.log('get',seourl) //调用两次，以后再优化
       let data = await getPage(seourl, secret)
       if (data.code === 0) {
         setPretext(data.content)
@@ -37,7 +38,7 @@ export default function Page() {
     if (shouldCreate) {
       createPage(seourl, value)
     } else {
-      changePage(seourl, secret, value)
+      changePage({seourl, secret, content: value})
     }
   }, 3000)
 

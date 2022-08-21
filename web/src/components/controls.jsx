@@ -1,7 +1,7 @@
 import SimpleDialog from './simple-dialog.jsx';
 import padlockUrl from "../assets/padlock.png"
-import {useState, useEffect, useRef} from 'react';
-import {addPagePassword, destroyPage, getPage, getPageHead, removePagePassword} from '../api/index'
+import {useState, useEffect} from 'react';
+import {addPagePassword, changePage, destroyPage, getPage, getPageHead, removePagePassword} from '../api/index'
 import { useNavigate } from "react-router-dom";
 import SnackAlert from './snack-alert';
 import InputDialog from './input-dialog';
@@ -17,7 +17,7 @@ export default function Controls(props) {
   useEffect(() => {
     if (hasPassword && secret === "") {
       setControl({
-          inputDialog:{
+          inputDialog:{  inputType: 'password',
             open: true,
             title: '需要密码',
             content: '这张纸被密码保护，请输入密码',
@@ -30,7 +30,7 @@ export default function Controls(props) {
   const handlePassword = async () => {
     if (hasPassword){
       setControl({
-        inputDialog:{
+        inputDialog:{  inputType: 'password',
           open: true,
           title: '移除密码',
           content: '请输入页面密码',
@@ -45,7 +45,7 @@ export default function Controls(props) {
         return
       }
       setControl({
-        inputDialog:{
+        inputDialog:{  inputType: 'password',
           open: true,
           title: '设置密码',
           content: '请输入页面密码',
@@ -114,15 +114,37 @@ export default function Controls(props) {
     }
   }
 
-  const modifyPageUrl = () => {
+  const handleModifyPageUrl = () => {
+    setControl({
+      inputDialog:{  inputType: 'text',
+        open: true,
+        title: '修改网址',
+        content: '请输入页面新网址',
+        submit: modifyUrl
+      }
+    })
+
   }
 
-  const sharePage = () => {
+  const modifyUrl = async (value) => {
+    if (value.length < 3 || value.length > 33){
+      setControl({snackbar: { open: true, style: 'warning', info: '网址长度需要大于3小于33'}})
+      return
+    }
+    const page = {seourl,secret,newSeourl:value}
+    const result = await changePage(page)
+    if (result.code === 0) {
+      navigate(`/${value}`)
+      setControl({inputDialog:{open: false},snackbar:{ open: true, style: 'success', info: '页面网址修改成功！' }})
+    }
+  }
+
+  const handleSharePage = () => {
     copyTextToClipboard(sharedPageLink)
     setControl({snackbar: { open: true, style: 'success', info: '页面网址已复制到剪切板' }})
   }
 
-  const copyToClipboard = () => {
+  const handleChandleCopyToClipboard = () => {
     copyTextToClipboard(getPretext())
     setControl({snackbar: { open: true, style: 'success', info: '页面内容已复制到剪切板' }})
   }
@@ -144,10 +166,10 @@ export default function Controls(props) {
           </a>
         </div>
         <div id="ctrl-top">
-          <a onClick={modifyPageUrl}>修改网址</a>
+          <a onClick={handleModifyPageUrl}>修改网址</a>
         </div>
-        <a onClick={sharePage} title={sharedPageLink}> 分享这页</a>
-        <a onClick={copyToClipboard}> 一键复制</a>
+        <a onClick={handleSharePage} title={sharedPageLink}> 分享这页</a>
+        <a onClick={handleChandleCopyToClipboard}> 一键复制</a>
       </div>
     </>
   )
