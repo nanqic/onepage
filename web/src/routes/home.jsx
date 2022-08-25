@@ -1,41 +1,95 @@
-import { useState } from 'react'
-import { Link, useNavigate } from "react-router-dom";
-import { generateShortLink } from "../utils/shortUrl";
+import {useState} from 'react'
+import {useNavigate} from "react-router-dom";
+import {Link} from '@mui/material'
+import CssBaseline from '@mui/material/CssBaseline';
+import Box from '@mui/material/Box';
+import Container from '@mui/material/Container';
+import {generateShortLink} from "../utils/shortUrl";
+import TextField from "@mui/material/TextField";
+import Button from "@mui/material/Button";
+import {Typography} from "@mui/material";
+import {getPageHead} from "@/api/index.js";
+
 
 export default function Home() {
-  const [seourl, setSeourl] = useState(generateShortLink())
-  const navigate = useNavigate();
+    const [seourl, setSeourl] = useState(generateShortLink())
+    const [helperText, setHelperText] = useState("")
+    const navigate = useNavigate();
 
-  const handleSubmit = () => {
-    navigate(`${seourl}`, { replace: true });
-  }
+    const handleSubmit = async () => {
+        if (seourl.length > 0 && seourl.length < 3) {
+            setHelperText("网址长度至少3位")
+            return
+        }
+        const result = await getPageHead(seourl)
+        if (result) {
+            setHelperText("该网址已有人使用，换个别的吧")
+            return
+        }
+        navigate(`${seourl}`, {replace: true});
+    }
 
     const handleKeyUp = (e) => {
         if (e.key !== 'Enter') return
         handleSubmit()
     }
-  return (
-    <div className="container">
-      <h1><Link to="/">One Page</Link></h1>
-      <nav
-        style={{
-          borderBottom: "solid 1px",
-          paddingBottom: "1rem",
-        }}
-      >
-        <Link to="/login">login</Link>
-        <Link to="/register">register</Link>
-      </nav>
-      <main>
-        <p className="description">
-          Get started. <code>启用云上的一页纸</code>
-        </p>
-        <div className="form-wrapper">
-          <input onChange={e => setSeourl(e.target.value)} onKeyUp={(e) => handleKeyUp(e)} type="text" placeholder="不填写将随机创建" />
-          <button type="button" onClick={handleSubmit} >打开</button>
-        </div>
-      </main>
-    </div>
-  )
+
+    return (
+        <>
+            <CssBaseline/>
+            <Container maxWidth="sm" sx={{
+                display: 'flex',
+                flexDirection: 'column',
+                height: '100vh'
+            }}>
+                <Box sx={{
+                    flex: 2,
+                }}>
+                    <Typography variant="h3" textAlign={"center"} sx={{pt:5}}>
+                        <Link to="/" underline="none">One Page</Link>
+                    </Typography>
+                    <Typography textAlign={"center"} sx={{pt:5}} variant="h6">
+                        Get started. <code>启用云上的一页纸</code>
+                    </Typography>
+                </Box>
+                <Box sx={{
+                    flex: 8,
+                    display: 'flex',
+                    justifyContent: 'center',
+                    alignItems: 'flex-start',
+                    padding: 5
+                }}>
+                    <TextField
+                        focused
+                        fullWidth
+                        helperText={helperText}
+                        error={helperText !== ""}
+                        label="输入网址"
+                        variant="filled"
+                        color="success"
+                        onChange={e => setSeourl(e.target.value)}
+                        onKeyUp={e => handleKeyUp(e)} type="text"
+                        placeholder="不填写将随机创建"/>
+                    <Button variant="contained" color="success"
+                            sx={{
+                                height: '56px'
+                            }}
+                            onClick={handleSubmit}>
+                        打开
+                    </Button>
+
+                </Box>
+                <Box sx={{
+                    flex: 1,
+                    display: 'flex',
+                    justifyContent: 'center',
+                    alignItems: 'center'
+                }}>
+                    One Page 2022
+                </Box>
+            </Container>
+        </>
+    );
 }
+
 

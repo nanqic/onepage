@@ -1,16 +1,17 @@
 // 获取唯一的Link
+import {getPageHead} from "@/api/index.js";
+
 export async function getShortLink() {
-    const shortLink = this.generateShortLink();
+    const shortLink = generateShortLink();
 
     // 查询数据库中是否存在该链接，如果存在，就直接返回
-    const searchResult = await this.searchByLinkInMySQL(shortLink);
+    const searchResult = await getPageHead(shortLink);
 
-    if (searchResult && searchResult.length > 0) {
+    if (searchResult) {
         // 如果shortLink已经存在，就遍历重新生成
-        return this.getShortLink();
+        return getShortLink();
     }
     return shortLink;
-
 }
 
 // 生成随机的Link

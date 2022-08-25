@@ -3,6 +3,8 @@ lockfileVersion: 5.4
 specifiers:
   '@emotion/react': ^11.10.0
   '@emotion/styled': ^11.10.0
+  '@fatewa/kinnara': ^1.0.6
+  '@mui/icons-material': ^5.8.4
   '@mui/material': ^5.10.1
   '@types/react': ^18.0.17
   '@types/react-dom': ^18.0.6
@@ -16,6 +18,8 @@ specifiers:
 dependencies:
   '@emotion/react': 11.10.0_ug65io7jkbhmo4fihdmbrh3ina
   '@emotion/styled': 11.10.0_lzabd6uj4wst47copsenr4b56q
+  '@fatewa/kinnara': 1.0.6
+  '@mui/icons-material': 5.8.4_uxiimzjvigalxf5okfzuivgjva
   '@mui/material': 5.10.1_sqzxty2p7kxc2tmue4tecplwku
   react: 18.2.0
   react-dom: 18.2.0_react@18.2.0
@@ -430,6 +434,10 @@ packages:
     dev: true
     optional: true
 
+  /@fatewa/kinnara/1.0.6:
+    resolution: {integrity: sha512-A+OFtVsjUWmmidxsUD8MSCrcuh2wVRS7guIZGWOxF2UI/7QiJrEoar5NHMeOX5cNIvf6z5gvq19U4DLh4l2h5g==}
+    dev: false
+
   /@jridgewell/gen-mapping/0.1.1:
     resolution: {integrity: sha512-sQXCasFk+U8lWYEe66WxRDOE9PjVz4vSM51fTu3Hw+ClTpUSQb718772vH3pyS5pShp6lvQM7SxgIDXXXmOX7w==}
     engines: {node: '>=6.0.0'}
@@ -494,6 +502,23 @@ packages:
 
   /@mui/core-downloads-tracker/5.10.1:
     resolution: {integrity: sha512-zyzLkVSqi+WuxG8UZrrOaWbhHkDK+MlHFjLpL+vqUVU6iSUaDYREu1xoLWEQsWOznT4oT2iEiGZLpQLgkn+WiA==}
+    dev: false
+
+  /@mui/icons-material/5.8.4_uxiimzjvigalxf5okfzuivgjva:
+    resolution: {integrity: sha512-9Z/vyj2szvEhGWDvb+gG875bOGm8b8rlHBKOD1+nA3PcgC3fV6W1AU6pfOorPeBfH2X4mb9Boe97vHvaSndQvA==}
+    engines: {node: '>=12.0.0'}
+    peerDependencies:
+      '@mui/material': ^5.0.0
+      '@types/react': ^17.0.0 || ^18.0.0
+      react: ^17.0.0 || ^18.0.0
+    peerDependenciesMeta:
+      '@types/react':
+        optional: true
+    dependencies:
+      '@babel/runtime': 7.18.9
+      '@mui/material': 5.10.1_sqzxty2p7kxc2tmue4tecplwku
+      '@types/react': 18.0.17
+      react: 18.2.0
     dev: false
 
   /@mui/material/5.10.1_sqzxty2p7kxc2tmue4tecplwku:

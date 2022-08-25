@@ -47,7 +47,11 @@ from
     <connection id="8f04e804-b870-4f12-b5dc-ebaa5e4c2fdd" />
   </component>
   <component name="DBNavigator.Project.DatasetFilterManager">
-    <filter-actions connection-id="8f04e804-b870-4f12-b5dc-ebaa5e4c2fdd" dataset="main.TempPages" active-filter-id="" />
+    <filter-actions connection-id="8f04e804-b870-4f12-b5dc-ebaa5e4c2fdd" dataset="main.TempPages" active-filter-id="c3d2f520-41ae-4124-a0ad-f59b1d16bcf4">
+      <filter id="c3d2f520-41ae-4124-a0ad-f59b1d16bcf4" name="Filter 1" temporary="false" custom-name="false" type="basic" join-type="AND">
+        <condition column="id" operator="=" value="" active="true" />
+      </filter>
+    </filter-actions>
   </component>
   <component name="DBNavigator.Project.EditorStateManager">
     <last-used-providers />

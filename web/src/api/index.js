@@ -1,97 +1,68 @@
-// const apiUrl = "http://localhost:8000/"
-const apiUrl = "api/"
+import {deleteRequest, getRequest, postRequest, putRequest} from "@/api/reqest.js";
+
+const apiUrl = '/api/'
 const passwordUrl = 'page/password'
 
 export const getPageHead = async (seourl) => {
     const resp = await fetch(apiUrl + seourl, {
         method: 'HEAD'
     })
-    return resp.status === 200 ? true : false
+    return resp.status === 200
 }
 
 export const getPage = async (seourl, secret) => {
-    const resp = await fetch(apiUrl + seourl, {
-        headers: {
-            'x-password': secret
-        }
-    })
-    let data
-    if (resp.status === 200) {
-        data = await resp.json()
+    const option = {
+        url: apiUrl + seourl,
+        secret
     }
-    return data
+    return await getRequest(option)
 }
 
-export const createPage = async (seourl, value) => {
-    const url = apiUrl + seourl
-    const body = {
-        content: value
+export const getSharedPage = async (sharedUrl) => {
+    const option = {
+        url: `${apiUrl}share/${sharedUrl}`,
     }
-    const resp = await fetch(url, {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json'
-        },
-        body: JSON.stringify(body)
-    })
-    return await resp.json()
+    return await getRequest(option)
+}
+
+export const createPage = async (page) => {
+    const option = {
+        url: apiUrl + page.seourl,
+        data: {content: page.content,sharedUrl: page.sharedUrl}
+    }
+    return await postRequest(option)
 }
 
 export const changePage = async (page) => {
-    const url = apiUrl + page.seourl
-    const header = {
-        'Content-Type': 'application/json',
-        'x-password': page.secret
-
+    const option = {
+        url: apiUrl + page.seourl,
+        secret: page.secret,
+        data: {...page}
     }
-    page.seourl = page.newSeourl
-    delete page.secret
-    delete page.newSeourl
-    const resp = await fetch(url, {
-        method: 'PUT',
-        headers: header,
-        body: JSON.stringify({...page})
-    })
-    return await resp.json()
+    return await putRequest(option)
 }
-
 
 export const destroyPage = async (seourl, secret) => {
-    const url = apiUrl + seourl
-    const resp = await fetch(url, {
-        method: 'DELETE',
-        headers: {
-            'Content-Type': 'application/json',
-            'x-password': secret
-        },
-    })
-    return await resp.json()
+    const option = {
+        url: apiUrl + seourl,
+        secret,
+    }
+    return await deleteRequest(option)
 }
 
-export const addPagePassword = async (seourl,secret)=>{
-    const url = apiUrl + passwordUrl
-    const body = {seourl,newPassword:secret}
+export const addPagePassword = async (seourl, secret) => {
+    const option = {
+        url: apiUrl + passwordUrl,
+        data: {seourl, newPassword: secret}
+    }
 
-    const resp = await fetch(url, {
-        method: 'post',
-        headers: {
-            'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(body)
-    })
-    return await resp.json()
+    return await postRequest(option)
 }
 
-export const removePagePassword = async (seourl,secret)=>{
-    const url = apiUrl + passwordUrl
-    const body = {seourl,oldPassword:secret}
-
-    const resp = await fetch(url, {
-        method: 'delete',
-        headers: {
-            'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(body)
-    })
-    return await resp.json()
+export const removePagePassword = async (seourl, secret) => {
+    const option = {
+        url: apiUrl + passwordUrl,
+        data: {seourl, oldPassword: secret}
+    }
+    return await deleteRequest(option)
 }

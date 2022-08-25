@@ -1,176 +1,220 @@
 import SimpleDialog from './simple-dialog.jsx';
-import padlockUrl from "../assets/padlock.png"
 import {useState, useEffect} from 'react';
 import {addPagePassword, changePage, destroyPage, getPage, getPageHead, removePagePassword} from '../api/index'
-import { useNavigate } from "react-router-dom";
+import {useNavigate} from "react-router-dom";
 import SnackAlert from './snack-alert';
 import InputDialog from './input-dialog';
-import { setCookie } from 'react-use-cookie';
+import {setCookie} from 'react-use-cookie';
 import {copyTextToClipboard} from "../utils/index.js";
+import * as React from 'react';
+import Box from '@mui/material/Box';
+import SpeedDial from '@mui/material/SpeedDial';
+import SpeedDialIcon from '@mui/material/SpeedDialIcon';
+import SpeedDialAction from '@mui/material/SpeedDialAction';
+import FileCopyIcon from '@mui/icons-material/FileCopyOutlined';
+import ShareIcon from '@mui/icons-material/Share';
+import {Delete, Edit, EnhancedEncryption, LockOpen} from "@mui/icons-material";
+
 
 export default function Controls(props) {
-  const { seourl, hasPassword,setHasPassword, secret,getPretext, setPretext } = props
-  const [control, setControl] = useState({})
-  const navigate = useNavigate();
-  const sharedPageLink = import.meta.env.VITE_APP_URL + seourl
+    const {isNewPage, seourl, sharedUrl, hasPassword, setHasPassword, secret, textareaEl, setContent} = props
+    const [control, setControl] = useState({})
+    const navigate = useNavigate();
 
-  useEffect(() => {
-    if (hasPassword && secret === "") {
-      setControl({
-          inputDialog:{  inputType: 'password',
-            open: true,
-            title: '需要密码',
-            content: '这张纸被密码保护，请输入密码',
-            submit: handleInputPwSubmit
+    useEffect(() => {
+        if (hasPassword && secret === "") {
+            setControl({inputDialog: needPwDialog})
         }
-      })
-    }
-  }, [props])
+    }, [props])
 
-  const handlePassword = async () => {
-    if (hasPassword){
-      setControl({
-        inputDialog:{  inputType: 'password',
-          open: true,
-          title: '移除密码',
-          content: '请输入页面密码',
-          submit: handleRemovePwSubmit
-        }
-      })
-    }else{
-      // 检测页面是否存在
-      const result = await getPageHead(seourl)
-      if (!result){
-        setControl({snackbar:{ open: true, style: 'warning', info: '页面内容为空时，不能创建密码' }})
-        return
-      }
-      setControl({
-        inputDialog:{  inputType: 'password',
-          open: true,
-          title: '设置密码',
-          content: '请输入页面密码',
-          submit: handleAddPwSubmit
-        }
-      })
-    }
-  }
-
-  const handleInputPwSubmit = async (value) => {
-    const result = await getPage(seourl,value)
-    if (result.code===0){
-      setControl({snackbar:{ open: false},inputDialog:{ open: false}})
-      setPretext(result.content)
-      setCookie(seourl, window.btoa(value))
-    } else {
-      setControl({snackbar:{ open: true, style: 'error', info: '密码不正确' }})
-    }
-  };
-
-  const handleAddPwSubmit = async (value) => {
-    if (value.length < 4){
-      setControl({snackbar: { open: true, style: 'warning', info: '密码长度需要大于3'}})
-      return
-    }
-    const result = await addPagePassword(seourl,value)
-    if (result.code === 0) {
-      setControl({inputDialog:{open: false},snackbar:{ open: true, style: 'success', info: '页面密码设置成功！' }})
-      setHasPassword(true)
-      setCookie(seourl, window.btoa(value))
-    }
-  }
-
-  const handleRemovePwSubmit = async (value) => {
-    const result = await removePagePassword(seourl,value)
-    if (result.code === 0) {
-      setControl({ inputDialog:{open: false},snackbar:{open: true, style: 'success', info: '页面密码移除成功！'}})
-      setHasPassword(false)
-      setCookie(seourl, "", { days: 0 });
-    }else {
-      setControl({snackbar: { open: true, style: 'error', info: '页面密码不正确'}})
-    }
-  }
-  const handleDestroy = () => {
-    setControl({
-      simpleDialog:{
+    const needPwDialog = {
+        inputType: 'password',
         open: true,
-        title: "确定销毁吗？",
+        title: '需要密码',
+        content: '这张纸被密码保护，请输入密码',
+        submit: handleNeedPwSubmit
+    }
+
+    const getContent = () => textareaEl.current.firstChild.firstChild.value
+
+    const removePwDialog = {
+        inputType: 'password',
+        open: true,
+        title: '移除密码',
+        content: '请输入页面密码',
+        submit: handleRemovePwSubmit
+    }
+
+    const addPwDialog = {
+        inputType: 'password',
+        open: true,
+        title: '设置密码',
+        content: '请输入页面密码',
+        submit: handleAddPwSubmit
+    }
+
+    async function handleNeedPwSubmit(value) {
+        if (value.length < 4) {
+            setControl({inputDialog: {...needPwDialog, helperText: '密码长度需要大于3'}})
+            return
+        }
+        const result = await getPage(seourl, value)
+        if (result.code === 200) {
+            setControl({inputDialog: {open: false}})
+            setContent(result.data.content)
+            setCookie(seourl, window.btoa(value))
+        } else {
+            setControl({inputDialog: {...needPwDialog, helperText: '密码不不正确'}})
+        }
+    }
+
+    async function handleAddPwSubmit(value) {
+        if (value.length < 3) {
+            setControl({inputDialog: {...addPwDialog, helperText: '页面密码长度需要大于3'}})
+            return
+        }
+        const result = await addPagePassword(seourl, value)
+        if (result.code === 200) {
+            setControl({
+                inputDialog: {open: false},
+                snackbar: {open: true, style: 'success', info: '页面密码设置成功！'}
+            })
+            setHasPassword(true)
+            setCookie(seourl, window.btoa(value))
+        }
+    }
+
+    async function handleRemovePwSubmit(value) {
+        if (value.length < 3) {
+            setControl({inputDialog: {...removePwDialog, helperText: '密码长度需要大于3'}})
+            return
+        }
+        const result = await removePagePassword(seourl, value)
+        if (result.code === 200) {
+            setControl({
+                inputDialog: {open: false},
+                snackbar: {open: true, style: 'success', info: '页面密码移除成功！'}
+            })
+            setHasPassword(false)
+            setCookie(seourl, "", {days: 0});
+        } else {
+            setControl({inputDialog: {...removePwDialog, helperText: '密码不正确'}})
+        }
+    }
+
+    const destroyDialog = {
+        open: true,
+        inputType: 'password',
+        title: "验证密码",
         content: "页面一旦销毁，内容无法找回，该操作不可撤销。",
-        confirm: handleDestroyConfirm
-      }
-    })
-  }
-
-  const handleDestroyConfirm = async () => {
-    // 检测页面是否存在
-    const resp= await getPageHead(seourl)
-    if (!resp){
-      setControl({snackbar:{ open: true, style: 'warning', info: '页面尚未创建' }})
-      return
+        submit: handleDestroySubmit
     }
-    const result = await destroyPage(seourl, secret)
-    if (result.code === 0) {
-      setControl({simpleDialog:{ open: false }, snackbar:{open: true, style: 'success', info: '页面已成功销毁，3s后将跳转到首页'}})
-      setTimeout(() => navigate(`/`, { replace: true }), 3000)
-    }
-  }
 
-  const handleModifyPageUrl = () => {
-    setControl({
-      inputDialog:{  inputType: 'text',
+    async function handleDestroySubmit(value) {
+        const result = await removePagePassword(seourl, value)
+
+        if (result.code === 200) {
+            const destroyResult = await destroyPage(seourl, secret)
+            if (destroyResult.code === 200) {
+                setControl({
+                    simpleDialog: {open: false},
+                    snackbar: {open: true, style: 'success', info: '页面已成功销毁，3s后将跳转到首页'}
+                })
+                setTimeout(() => navigate(`/`, {replace: true}), 3000)
+            }
+        } else {
+            setControl({
+                simpleDialog: {open: false},
+                snackbar: {open: true, style: 'error', info: result.msg}
+            })
+        }
+    }
+
+
+    const handleModifyPageUrlConfirm = async (value) => {
+        if (value.length < 3 || value.length > 33) {
+            setControl({inputDialog: {...ModifyPageUrlDialogObj, helperText: '网址长度需要大于3小于33'}})
+            return
+        }
+        // 检测页面是否存在
+        const resp = await getPageHead(seourl)
+        if (!resp) {
+            setControl({inputDialog: {...ModifyPageUrlDialogObj, helperText: '暂时不能修改, 因为该页面没有任何内容'}})
+            return
+        }
+
+        const isUsed = await getPageHead(value)
+        if (isUsed) {
+            setControl({inputDialog: {...ModifyPageUrlDialogObj, helperText: '该网址已有人使用，换个别的吧'}})
+            return
+        }
+        const page = {seourl, secret, newSeourl: value}
+        const result = await changePage(page)
+        if (result.code === 200) {
+            navigate(`/${value}`)
+            setControl({
+                inputDialog: {open: false},
+                snackbar: {open: true, style: 'success', info: '页面网址修改成功！'}
+            })
+            setCookie(seourl, "", {days: 0});
+            setCookie(value, window.btoa(value))
+        }
+    }
+
+    const ModifyPageUrlDialog = {
+        inputType: 'text',
         open: true,
         title: '修改网址',
         content: '请输入页面新网址',
-        submit: modifyUrl
-      }
-    })
-
-  }
-
-  const modifyUrl = async (value) => {
-    if (value.length < 3 || value.length > 33){
-      setControl({snackbar: { open: true, style: 'warning', info: '网址长度需要大于3小于33'}})
-      return
+        submit: handleModifyPageUrlConfirm
     }
-    const page = {seourl,secret,newSeourl:value}
-    const result = await changePage(page)
-    if (result.code === 0) {
-      navigate(`/${value}`)
-      setControl({inputDialog:{open: false},snackbar:{ open: true, style: 'success', info: '页面网址修改成功！' }})
+
+    const handleSharePage = () => {
+        const sharedPageLink = import.meta.env.VITE_APP_URL + '/share/' + sharedUrl
+        console.log(sharedPageLink)
+        copyTextToClipboard(sharedPageLink)
+        setControl({snackbar: {open: true, style: 'success', info: '页面网址已复制到剪切板'}})
     }
-  }
 
-  const handleSharePage = () => {
-    copyTextToClipboard(sharedPageLink)
-    setControl({snackbar: { open: true, style: 'success', info: '页面网址已复制到剪切板' }})
-  }
+    const handleCopyToClipboard = () => {
+        copyTextToClipboard(getContent())
+        setControl({snackbar: {open: true, style: 'success', info: '页面内容已复制到剪切板'}})
+    }
 
-  const handleChandleCopyToClipboard = () => {
-    copyTextToClipboard(getPretext())
-    setControl({snackbar: { open: true, style: 'success', info: '页面内容已复制到剪切板' }})
-  }
-  return (
-    <>
-      <SimpleDialog {...control.simpleDialog} />
-      <SnackAlert {...control.snackbar} />
-      {control.inputDialog===undefined ? "" : <InputDialog {...control.inputDialog} />}
-
-      <div id="controls">
-        <div id="ctrl-left">
-          <a onClick={handleDestroy} id="padlock" title="">
-            销毁页面
-          </a>
-          {}
-          <a onClick={handlePassword}>
-            <img src={padlockUrl} alt='icon' width="8" height="13" />
-            {hasPassword ? "移除" : "添加"}密码
-          </a>
-        </div>
-        <div id="ctrl-top">
-          <a onClick={handleModifyPageUrl}>修改网址</a>
-        </div>
-        <a onClick={handleSharePage} title={sharedPageLink}> 分享这页</a>
-        <a onClick={handleChandleCopyToClipboard}> 一键复制</a>
-      </div>
-    </>
-  )
+    // 定义图标
+    const actions = [
+        {icon: <ShareIcon/>, name: '分享这页', handler: handleSharePage},
+        {icon: <FileCopyIcon/>, name: '复制内容', handler: handleCopyToClipboard},
+        {icon: <Edit/>, name: '修改网址', handler: () => setControl({inputDialog: ModifyPageUrlDialog})},
+        {
+            icon: hasPassword ? <LockOpen/> : <EnhancedEncryption/>,
+            name: hasPassword ? "移除密码" : "添加密码",
+            handler: () => setControl({inputDialog: hasPassword ? removePwDialog : addPwDialog})
+        },
+        {icon: <Delete/>, name: '销毁页面', handler: () => setControl({inputDialog: destroyDialog})}
+    ];
+    return (
+        <>
+            <SimpleDialog {...control.simpleDialog} />
+            <SnackAlert {...control.snackbar} />
+            {control.inputDialog === undefined ? "" : <InputDialog {...control.inputDialog} />}
+            <Box sx={{height: 66, transform: 'translateZ(0px)', flexGrow: 1}}>
+                {isNewPage ? "" :
+                    <SpeedDial
+                        ariaLabel="SpeedDial basic"
+                        sx={{position: 'absolute', bottom: -6, right: 16}}
+                        icon={<SpeedDialIcon/>}
+                    >
+                        {actions.map((action) => (
+                            <SpeedDialAction
+                                key={action.name}
+                                icon={action.icon}
+                                tooltipTitle={action.name}
+                                onClick={action.handler}
+                            />
+                        ))}
+                    </SpeedDial>}
+            </Box>
+        </>
+    )
 }

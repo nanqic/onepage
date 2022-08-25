@@ -10,6 +10,11 @@ TempPage.init(
             allowNull: false,
             unique: 'compositeIndex'
         },
+        shared_url: {
+            type: DataTypes.TEXT,
+            allowNull: true,
+            unique: 'compositeIndex'
+        },
         content: DataTypes.TEXT,
         password: DataTypes.TEXT,
     },
@@ -21,14 +26,4 @@ TempPage.init(
 await sequelize.sync({ force: false });
 
 export default TempPage
-
-export const respOk = {
-    code: 0,
-    msg: 'ok'
-}
-
-export const respErr = {
-    code: -1,
-    msg: 'err'
-}
 
