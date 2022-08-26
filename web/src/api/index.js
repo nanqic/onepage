@@ -1,13 +1,13 @@
 import {deleteRequest, getRequest, postRequest, putRequest} from "@/api/reqest.js";
 
-const apiUrl = '/api/'
-const passwordUrl = 'page/password'
+const apiUrl = import.meta.env.VITE_API_URL+'/'
+const passwordUrl = '/password'
 
 export const getPageHead = async (seourl) => {
     const resp = await fetch(apiUrl + seourl, {
-        method: 'HEAD'
+        method: 'HEAD',
     })
-    return resp.status === 200
+    return resp
 }
 
 export const getPage = async (seourl, secret) => {

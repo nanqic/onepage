@@ -10,28 +10,28 @@ import Button from "@mui/material/Button";
 import {Typography} from "@mui/material";
 import {getPageHead} from "@/api/index.js";
 
-
 export default function Home() {
     const [seourl, setSeourl] = useState(generateShortLink())
     const [helperText, setHelperText] = useState("")
     const navigate = useNavigate();
 
     const handleSubmit = async () => {
-        if (seourl.length > 0 && seourl.length < 3) {
-            setHelperText("网址长度至少3位")
+        if (seourl.length > 33 || seourl.length < 3) {
+            setHelperText("网址长度应为3-32位")
             return
         }
-        const result = await getPageHead(seourl)
-        if (result) {
-            setHelperText("该网址已有人使用，换个别的吧")
-            return
-        }
+        getPageHead('')
+            .then(res => {
+                if (res.status === 500) {
+                    navigate('/500')
+                }
+            })
         navigate(`${seourl}`, {replace: true});
     }
 
-    const handleKeyUp = (e) => {
+    const handleKeyUp = async (e) => {
         if (e.key !== 'Enter') return
-        handleSubmit()
+        await handleSubmit()
     }
 
     return (
@@ -45,10 +45,10 @@ export default function Home() {
                 <Box sx={{
                     flex: 2,
                 }}>
-                    <Typography variant="h3" textAlign={"center"} sx={{pt:5}}>
+                    <Typography variant="h3" textAlign={"center"} sx={{pt: 5}}>
                         <Link to="/" underline="none">One Page</Link>
                     </Typography>
-                    <Typography textAlign={"center"} sx={{pt:5}} variant="h6">
+                    <Typography textAlign={"center"} sx={{pt: 5}} variant="h6">
                         Get started. <code>启用云上的一页纸</code>
                     </Typography>
                 </Box>

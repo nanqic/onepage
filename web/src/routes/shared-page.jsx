@@ -1,6 +1,6 @@
 import {useEffect, useRef, useState} from "react";
 import Prompt from "../components/prompt";
-import {useNavigate, useParams} from "react-router-dom";
+import {useNavigate, useSearchParams} from "react-router-dom";
 import {getSharedPage} from "../api"
 import Box from "@mui/material/Box";
 import TextField from "@mui/material/TextField";
@@ -9,7 +9,7 @@ import SnackAlert from "@/components/snack-alert.jsx";
 import * as React from "react";
 
 export default function SharedPage() {
-    const {sharedUrl} = useParams()
+    const [searchParams] = useSearchParams();
     const textareaEl = useRef(null)
     const getContent = () => textareaEl.current.firstChild.firstChild.value
     const setContent = (value) => textareaEl.current.firstChild.firstChild.value = (value)
@@ -17,8 +17,9 @@ export default function SharedPage() {
     const [control, setControl] = useState({})
 
     useEffect(() => {
+        const sharedUrl = searchParams.get('p')
         const initData = async () => {
-            // console.log('get',seourl) //调用两次，以后再优化
+            // console.log('get') //调用两次，以后再优化
             let resp = await getSharedPage(sharedUrl)
             if (resp.code === 200 && resp.data!==null) {
                 setContent(resp.data.content)

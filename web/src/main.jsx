@@ -6,10 +6,12 @@ import Page from "./routes/page"
 import Home from './routes/home';
 import PageNotFound from "@/routes/page-not-found.jsx";
 import SharedPage from "@/routes/shared-page";
+import InternalServerError from "@/routes/internal-server-error";
 
 const root = ReactDOM.createRoot(
     document.getElementById("root")
 );
+
 root.render(
     <React.StrictMode>
         <BrowserRouter>
@@ -18,8 +20,9 @@ root.render(
                     <Route index element={<Home/>}/>
                     <Route path=":seourl" element={<Page/>}/>
                 </Route>
-                <Route path="/share/:sharedUrl" element={<SharedPage/>}/>
+                <Route path="/share" element={<SharedPage/>}/>
                 <Route path="/404" element={<PageNotFound/>}/>
+                <Route path="/500" element={<InternalServerError/>}/>
             </Routes>
         </BrowserRouter>
     </React.StrictMode>

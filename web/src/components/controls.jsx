@@ -102,7 +102,7 @@ export default function Controls(props) {
         }
     }
 
-    const destroyDialog = {
+    const destroyPwDialog = {
         open: true,
         inputType: 'password',
         title: "验证密码",
@@ -110,10 +110,15 @@ export default function Controls(props) {
         submit: handleDestroySubmit
     }
 
-    async function handleDestroySubmit(value) {
-        const result = await removePagePassword(seourl, value)
+    const destroyDialog = {
+        open: true,
+        title: "销毁确认",
+        content: "页面一旦销毁，内容无法找回，确定销毁吗？",
+        confirm: handleDestroySubmit
+    }
 
-        if (result.code === 200) {
+    async function handleDestroySubmit(value) {
+        const doDestroy = async ()=>{
             const destroyResult = await destroyPage(seourl, secret)
             if (destroyResult.code === 200) {
                 setControl({
@@ -122,6 +127,18 @@ export default function Controls(props) {
                 })
                 setTimeout(() => navigate(`/`, {replace: true}), 3000)
             }
+        }
+
+        // 如果没有密码，直接销毁
+        if (value===undefined){
+            await doDestroy()
+            return;
+        }
+
+        // 输入密码后销毁
+        const result = await removePagePassword(seourl, value)
+        if (result.code === 200) {
+            await doDestroy()
         } else {
             setControl({
                 simpleDialog: {open: false},
@@ -130,7 +147,6 @@ export default function Controls(props) {
         }
     }
 
-
     const handleModifyPageUrlConfirm = async (value) => {
         if (value.length < 3 || value.length > 33) {
             setControl({inputDialog: {...ModifyPageUrlDialogObj, helperText: '网址长度需要大于3小于33'}})
@@ -138,13 +154,13 @@ export default function Controls(props) {
         }
         // 检测页面是否存在
         const resp = await getPageHead(seourl)
-        if (!resp) {
+        if (!resp.ok) {
             setControl({inputDialog: {...ModifyPageUrlDialogObj, helperText: '暂时不能修改, 因为该页面没有任何内容'}})
             return
         }
 
-        const isUsed = await getPageHead(value)
-        if (isUsed) {
+        const newResp = await getPageHead(value)
+        if (newResp.ok) {
             setControl({inputDialog: {...ModifyPageUrlDialogObj, helperText: '该网址已有人使用，换个别的吧'}})
             return
         }
@@ -170,8 +186,7 @@ export default function Controls(props) {
     }
 
     const handleSharePage = () => {
-        const sharedPageLink = import.meta.env.VITE_APP_URL + '/share/' + sharedUrl
-        console.log(sharedPageLink)
+        const sharedPageLink = import.meta.env.VITE_APP_URL + '/share?p=' + sharedUrl
         copyTextToClipboard(sharedPageLink)
         setControl({snackbar: {open: true, style: 'success', info: '页面网址已复制到剪切板'}})
     }
@@ -191,7 +206,7 @@ export default function Controls(props) {
             name: hasPassword ? "移除密码" : "添加密码",
             handler: () => setControl({inputDialog: hasPassword ? removePwDialog : addPwDialog})
         },
-        {icon: <Delete/>, name: '销毁页面', handler: () => setControl({inputDialog: destroyDialog})}
+        {icon: <Delete/>, name: '销毁页面', handler: () => setControl( hasPassword ?{inputDialog:destroyPwDialog}: {simpleDialog:destroyDialog})}
     ];
     return (
         <>
