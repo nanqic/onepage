@@ -43,5 +43,14 @@ export default defineConfig({
     cssCodeSplit: true,
     //构建后是否生成 source map 文件
     sourcemap: false,
+    // 每次打包清除原来的目录
+    emptyOutDir: true,
+    terserOptions: {
+      compress: {
+        drop_console: true,
+        // 默认是true
+        drop_debugger: true
+      }
+    }
   }
 })

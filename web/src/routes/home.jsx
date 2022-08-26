@@ -9,12 +9,14 @@ import TextField from "@mui/material/TextField";
 import Button from "@mui/material/Button";
 import {Typography} from "@mui/material";
 import {getPageHead} from "@/api/index.js";
+import Readme from "@/components/readme.jsx";
+import GitHubIcon from "@mui/icons-material/GitHub.js";
+import * as React from "react";
 
 export default function Home() {
     const [seourl, setSeourl] = useState(generateShortLink())
     const [helperText, setHelperText] = useState("")
     const navigate = useNavigate();
-
     const handleSubmit = async () => {
         if (seourl.length > 33 || seourl.length < 3) {
             setHelperText("网址长度应为3-32位")
@@ -80,12 +82,13 @@ export default function Home() {
 
                 </Box>
                 <Box sx={{
-                    flex: 1,
+                    flex: 2,
                     display: 'flex',
                     justifyContent: 'center',
-                    alignItems: 'center'
+                    alignItems: 'center',
                 }}>
-                    One Page 2022
+                    <Typography variant="subtitle2">One Page &copy; 2022</Typography> <Readme />
+                    <Link href={'https://github.com/nanqic/onepage'} color="inherit" rel ="noreferrer" target="_blank"><GitHubIcon/></Link>
                 </Box>
             </Container>
         </>

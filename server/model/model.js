@@ -1,4 +1,4 @@
-import { Sequelize, Model, DataTypes } from "sequelize"
+import { Model, DataTypes } from "sequelize"
 import { sequelize } from "../db.js";
 
 class TempPage extends Model { }

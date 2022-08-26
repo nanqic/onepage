@@ -5,6 +5,7 @@
 # sqlite database file
 *.db
 
+/public
+/.idea
 /logs
-
 .DS_Store

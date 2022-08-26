@@ -4,6 +4,8 @@ export async function getRequest(option){
         method: 'GET',
         headers: genHeader(option),
     })
+    if (!resp.ok) return resp
+
     return await resp.json()
 }
 
@@ -13,6 +15,8 @@ export async function postRequest(option){
         headers: genHeader(option),
         body: JSON.stringify(option.data)
     })
+    if (!resp.ok) return resp
+
     return await resp.json()
 }
 
@@ -22,6 +26,8 @@ export async function putRequest(option){
         headers: genHeader(option),
         body: JSON.stringify(option.data)
     })
+    if (!resp.ok) return resp
+
     return await resp.json()
 }
 
@@ -31,6 +37,8 @@ export async function deleteRequest(option){
         headers: genHeader(option),
         body: JSON.stringify(option.data)
     })
+    if (!resp.ok) return resp
+
     return await resp.json()
 }
 

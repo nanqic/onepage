@@ -18,7 +18,7 @@ export default function Page() {
     const textareaEl = useRef(null);
     const [sharedUrl, setSharedUrl] = useState()
     const setContent = (value) => textareaEl.current.firstChild.firstChild.value = (value)
-    const [syncColor, setSyncColor]= useState("#ccc")
+    const [syncColor, setSyncColor] = useState("#ccc")
     const pageObj = {isNewPage, seourl, sharedUrl, secret, setContent, textareaEl, hasPassword, setHasPassword,}
     const navigate = useNavigate();
 
@@ -50,7 +50,7 @@ export default function Page() {
             seourl
         }
 
-        let result ;
+        let result;
         if (isNewPage) {
             const url = generateShortLink()
             setSharedUrl(url)
@@ -59,11 +59,18 @@ export default function Page() {
         } else {
             result = await changePage(reqPage)
         }
-        if (result.code ===200){
+
+        if (result.code === 200) {
             setSyncColor("#2e7d32")
+        } else if (!result.ok) {
+            window.addEventListener('beforeunload', (event) => {
+                // Cancel the event as stated by the standard.
+                event.preventDefault();
+                // Chrome requires returnValue to be set.
+                event.returnValue = '';
+            });
         }
     }, 3000)
-
 
     return (
         <>
@@ -72,6 +79,7 @@ export default function Page() {
                     bgcolor: '#ebeef2',
                     display: 'flex',
                     flexWrap: 'wrap',
+                    pb: 7,
                     '& > :not(style)': {
                         m: 1,
                         width: '100%',
@@ -103,8 +111,8 @@ export default function Page() {
                         multiline
                         fullWidth
                         autoFocus
-                        onChange={e =>  handleTextChange(e)}
-                        onInput={()=>setSyncColor("#ccc")}
+                        onChange={e => handleTextChange(e)}
+                        onInput={() => setSyncColor("#ccc")}
                     />
                     <Controls {...pageObj} />
                 </Box>
