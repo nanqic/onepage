@@ -1,5 +1,5 @@
-import TempPage from '../model/model.js'
-import {compareHash} from '../utils.js'
+import TempPage from '../model/TempPagel.js'
+import {compareHash, hashDigest} from '../utils.js'
 import JsonResult from "../model/JsonResult.js";
 import BizResultCode from "../model/BizResultCode.js";
 import logger from "../config/logger.js";
@@ -34,7 +34,7 @@ export async function getPage(req) {
 
     const rawPassword = req.headers['x-password'] || ""
     const page = await TempPage.findOne({
-        attributes: ['id', 'content', 'password', 'shared_url'],
+        attributes: ['id', 'content', 'password', 'sharedUrl'],
         where: {seourl}
     });
 
@@ -43,13 +43,29 @@ export async function getPage(req) {
     } else {
         const isValid = passValidate(rawPassword, page.password)
         if (isValid) {
-            const {content, shared_url} = page
-            return JsonResult.success({content, shared_url})
+            const {content, sharedUrl} = page
+            return JsonResult.success({content, sharedUrl})
         } else {
             return JsonResult.validateFailed('require a valid password')
         }
     }
 
+}
+
+/**
+ * 获取分享的纸张内容
+ * @param req
+ * @returns {Promise<JsonResult>}
+ */
+export const getSharedPage = async (req) => {
+    const {sharedUrl} = req.params
+
+    const page = await TempPage.findOne({
+        attributes: ['content'],
+        where: {sharedUrl}
+    });
+
+    return JsonResult.success(page)
 }
 
 /**
@@ -62,21 +78,18 @@ export async function createPage(req) {
     const {content, sharedUrl} = req.body
 
     if (!isValidLength(content)) {
-        logger.error(`Error: can't create page ${seourl}, content length limit 5000 letter.`)
         return JsonResult.fail("content length reached limit.")
     }
     const [page, created] = await TempPage.findOrCreate({
         where: {seourl},
         defaults: {
-            seourl, content, shared_url: sharedUrl
+            seourl, content, sharedUrl
         }
     })
 
-    if (created) {
-        return JsonResult.success({content: page.content});
-    } else {
-        return JsonResult.fail('already exist');
-    }
+    return created ?
+        JsonResult.success(page) :
+        JsonResult.fail('already exist')
 }
 
 
@@ -87,32 +100,43 @@ export async function createPage(req) {
  */
 export async function modifyPage(req) {
     const {seourl} = req.params
-    const rawPassword = req.headers['x-password'] || ""
+    const password = req.headers['x-password'] || ""
+    const {content, newSeourl, newPassword} = req.body
 
+    logger.error('req.body', req.body, newPassword)
     const page = await TempPage.findOne({
         attributes: ['id', 'password'],
         where: {seourl}
     });
+
     if (page === null) {
         return JsonResult.bizFail(BizResultCode.NOT_CREATED)
-    } else {
-        if (passValidate(rawPassword, page.password)) {
-            const {content, newSeourl, sharedUrl} = req.body
+    }
 
-            if (!isValidLength(content)) {
-                logger.error(`Error: can't modify page ${seourl}, content length limit 5000 letter.`)
-                return JsonResult.fail("content length reached limit.")
-            }
+    // 密码验证
+    if (passValidate(password, page.password)) {
 
-            if (await isUrlExist(newSeourl)) {
-                return JsonResult.fail('url has already been used.')
-            }
-
-            await page.update({content, seourl: newSeourl, shared_url: sharedUrl})
-            return JsonResult.success();
-        } else {
-            return JsonResult.validateFailed();
+        if (!isValidLength(content)) {
+            logger.error(`Error: can't modify page ${seourl}, content length limit 5000 letter.`)
+            return JsonResult.fail("content length reached limit.")
         }
+
+        if (newPassword !== undefined) {
+            if (page.password === null) {
+                const passwordHash = hashDigest(newPassword)
+                page.update({password: passwordHash})
+                return JsonResult.success()
+            }
+        }
+
+        if (await isUrlExist(newSeourl)) {
+            return JsonResult.fail('url has already been used.')
+        }
+
+        await page.update({content, seourl: newSeourl, password: newPassword})
+        return JsonResult.success();
+    } else {
+        return JsonResult.validateFailed();
     }
 }
 

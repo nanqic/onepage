@@ -6,17 +6,17 @@ class TempPage extends Model { }
 TempPage.init(
     {
         seourl: {
-            type: DataTypes.TEXT,
+            type: DataTypes.STRING,
             allowNull: false,
             unique: 'compositeIndex'
         },
-        shared_url: {
-            type: DataTypes.TEXT,
+        sharedUrl: {
+            type: DataTypes.STRING,
             allowNull: true,
             unique: 'compositeIndex'
         },
         content: DataTypes.TEXT,
-        password: DataTypes.TEXT,
+        password: DataTypes.STRING,
     },
     {
         sequelize,

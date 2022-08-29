@@ -2,11 +2,11 @@ import * as React from "react";
 import ReactDOM from "react-dom/client";
 import {BrowserRouter, Routes, Route} from "react-router-dom";
 import App from "./app";
-import Page from "./routes/page"
-import Home from './routes/home';
-import PageNotFound from "@/routes/page-not-found.jsx";
-import SharedPage from "@/routes/shared-page";
-import InternalServerError from "@/routes/internal-server-error";
+import Page from "./pages/page"
+import Home from './pages/home';
+import PageNotFound from "@/pages/page-not-found.jsx";
+import SharedPage from "@/pages/shared-page";
+import InternalServerError from "@/pages/internal-server-error";
 
 const root = ReactDOM.createRoot(
     document.getElementById("root")

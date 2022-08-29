@@ -1,14 +1,13 @@
-import { Sequelize, Op, Model, DataTypes } from "sequelize"
+import { Sequelize } from "sequelize"
+import logger from "./config/logger.js";
+import {dbConfig} from "./config/datasource.js";
 
-export const sequelize = new Sequelize({
-    dialect: 'sqlite',
-    storage: './onepage.db'
-});
+export const sequelize = new Sequelize(dbConfig);
 
 try {
     await sequelize.authenticate();
-    console.log('Connection has been established successfully.');
+    logger.info('Connection has been established successfully.');
 } catch (error) {
-    console.error('Unable to connect to the database:', error);
+    logger.error('Unable to connect to the database:', error);
 }
 

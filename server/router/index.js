@@ -1,6 +1,6 @@
 import express from 'express'
-import {getPageHead, getPage, createPage, modifyPage, desdroyPage} from '../service/page-service.js'
-import TempPage from "../model/model.js";
+import {getPageHead, getPage, getSharedPage, createPage, modifyPage, desdroyPage} from '../service/page-service.js'
+import TempPage from "../model/TempPagel.js";
 import JsonResult from "../model/JsonResult.js";
 import BizResultCode from "../model/BizResultCode.js";
 import logger from "../config/logger.js";
@@ -35,5 +35,10 @@ router.put('/:seourl', async function (req, res) {
 // 销毁一页纸
 router.delete('/:seourl', async (req, res) => {
     res.send(await desdroyPage(req))
+})
+
+// 获取分享链接的文本
+router.get('/share/:sharedUrl', async (req, res) => {
+    res.send(await getSharedPage(req))
 })
 export default router

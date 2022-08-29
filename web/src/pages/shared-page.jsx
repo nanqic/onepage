@@ -24,7 +24,7 @@ export default function SharedPage() {
             if (resp.code === 200 && resp.data!==null) {
                 setContent(resp.data.content)
             } else {
-                navigate(`/404`)
+                // navigate(`/404`)
             }
         }
         initData()
@@ -65,7 +65,7 @@ export default function SharedPage() {
                     <TextField
                         disabled
                         ref={textareaEl}
-                        rows={25}
+                        rows={20}
                         variant="standard"
                         multiline
                         fullWidth

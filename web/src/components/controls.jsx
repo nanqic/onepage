@@ -1,6 +1,6 @@
 import SimpleDialog from './simple-dialog.jsx';
 import {useState, useEffect} from 'react';
-import {addPagePassword, changePage, destroyPage, getPage, getPageHead, removePagePassword} from '../api/index'
+import {changePage, destroyPage, getPage, getPageHead} from '../api/index'
 import {useNavigate} from "react-router-dom";
 import SnackAlert from './snack-alert';
 import InputDialog from './input-dialog';
@@ -17,12 +17,12 @@ import {Delete, Edit, EnhancedEncryption, LockOpen} from "@mui/icons-material";
 
 
 export default function Controls(props) {
-    const {isNewPage, seourl, sharedUrl, hasPassword, setHasPassword, secret, textareaEl, setContent} = props
+    const {isNewPage, seourl, sharedUrl, hasPassword, setHasPassword, password, textareaEl, setContent} = props
     const [control, setControl] = useState({})
     const navigate = useNavigate();
 
     useEffect(() => {
-        if (hasPassword && secret === "") {
+        if (hasPassword && password === "") {
             setControl({inputDialog: needPwDialog})
         }
     }, [props])
@@ -58,6 +58,7 @@ export default function Controls(props) {
             setControl({inputDialog: {...needPwDialog, helperText: '密码长度需要大于3'}})
             return
         }
+        // 验证输入的密码是否正确
         const result = await getPage(seourl, value)
         if (result.code === 200) {
             setControl({inputDialog: {open: false}})
@@ -73,7 +74,9 @@ export default function Controls(props) {
             setControl({inputDialog: {...addPwDialog, helperText: '页面密码长度需要大于3'}})
             return
         }
-        const result = await addPagePassword(seourl, value)
+
+        const page = {seourl, newPassword: value}
+        const result = await changePage(page, value)
         if (result.code === 200) {
             setControl({
                 inputDialog: {open: false},
@@ -89,7 +92,9 @@ export default function Controls(props) {
             setControl({inputDialog: {...removePwDialog, helperText: '密码长度需要大于3'}})
             return
         }
-        const result = await removePagePassword(seourl, value)
+
+        const page = {seourl, newPassword: null}
+        const result = await changePage(page, value)
         if (result.code === 200) {
             setControl({
                 inputDialog: {open: false},
@@ -119,7 +124,7 @@ export default function Controls(props) {
 
     async function handleDestroySubmit(value) {
         const doDestroy = async ()=>{
-            const destroyResult = await destroyPage(seourl, secret)
+            const destroyResult = await destroyPage(seourl, password)
             if (destroyResult.code === 200) {
                 setControl({
                     simpleDialog: {open: false},
@@ -136,7 +141,7 @@ export default function Controls(props) {
         }
 
         // 输入密码后销毁
-        const result = await removePagePassword(seourl, value)
+        const result = await changePage({seourl}, value)
         if (result.code === 200) {
             await doDestroy()
         } else {
@@ -149,23 +154,18 @@ export default function Controls(props) {
 
     const handleModifyPageUrlConfirm = async (value) => {
         if (value.length < 3 || value.length > 33) {
-            setControl({inputDialog: {...ModifyPageUrlDialogObj, helperText: '网址长度需要大于3小于33'}})
-            return
-        }
-        // 检测页面是否存在
-        const resp = await getPageHead(seourl)
-        if (!resp.ok) {
-            setControl({inputDialog: {...ModifyPageUrlDialogObj, helperText: '暂时不能修改, 因为该页面没有任何内容'}})
+            setControl({inputDialog: {...ModifyPageUrlDialog, helperText: '网址长度需要大于3小于33'}})
             return
         }
 
-        const newResp = await getPageHead(value)
-        if (newResp.ok) {
-            setControl({inputDialog: {...ModifyPageUrlDialogObj, helperText: '该网址已有人使用，换个别的吧'}})
+        const response = await getPageHead(value)
+        if (response.ok) {
+            setControl({inputDialog: {...ModifyPageUrlDialog, helperText: '该网址已有人使用，换个别的吧'}})
             return
         }
-        const page = {seourl, secret, newSeourl: value}
-        const result = await changePage(page)
+
+        const page = {seourl, newSeourl: value}
+        const result = await changePage(page, password)
         if (result.code === 200) {
             navigate(`/${value}`)
             setControl({

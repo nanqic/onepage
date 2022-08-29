@@ -1,9 +1,7 @@
 import express from 'express'
 import helmet from 'helmet'
-import passwordRouter from './router/password.js'
-import appRouter from './router/page.js'
+import appRouter from './router/index.js'
 import loggerConfig from "./config/loggerConfig.js";
-import pageShareRouter from "./router/page-share.js";
 import * as path from 'path'
 import { fileURLToPath } from 'url'
 import { dirname } from 'path'
@@ -20,13 +18,10 @@ app.use(loggerConfig)
 // json解析
 app.use(express.json())
 
-
-
-// 纸张页面路由
+// api路由
 app.use('/api', appRouter);
-// 纸张密码路由
-app.use('/api', passwordRouter);
-app.use('/api', pageShareRouter);
+
+// 拦截转发前端请求
 app.get('/*', (req, res) => {
     res.sendFile(path.join(__dirname, 'public', 'index.html'));
 });

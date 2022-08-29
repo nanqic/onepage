@@ -12,14 +12,14 @@ import SyncIcon from '@mui/icons-material/Sync';
 
 export default function Page() {
     const [isNewPage, setIsNewPage] = useState(true)
-    const {seourl} = useParams()
-    const secret = window.atob(getCookie(seourl))
-    const [hasPassword, setHasPassword] = useState(secret !== "")
+    let {seourl} = useParams()
+    const password = window.atob(getCookie(seourl))
+    const [hasPassword, setHasPassword] = useState(password !== "")
     const textareaEl = useRef(null);
-    const [sharedUrl, setSharedUrl] = useState()
+    const [sharedUrl, setSharedUrl] = useState(generateShortLink())
     const setContent = (value) => textareaEl.current.firstChild.firstChild.value = (value)
     const [syncColor, setSyncColor] = useState("#ccc")
-    const pageObj = {isNewPage, seourl, sharedUrl, secret, setContent, textareaEl, hasPassword, setHasPassword,}
+    const pageObj = {isNewPage, seourl, sharedUrl, password, setContent, textareaEl, hasPassword, setHasPassword,}
     const navigate = useNavigate();
 
     useEffect(() => {
@@ -28,10 +28,10 @@ export default function Page() {
         }
         const initData = async () => {
             // console.log('get',seourl) //调用两次，以后再优化
-            let resp = await getPage(seourl, secret)
+            let resp = await getPage(seourl, password)
             if (resp.code === 200) {
                 setContent(resp.data.content)
-                setSharedUrl(resp.data.shared_url)
+                setSharedUrl(resp.data.sharedUrl)
                 setIsNewPage(false)
                 setSyncColor("#2e7d32")
             } else if (resp.code === 400) {
@@ -45,19 +45,17 @@ export default function Page() {
     const handleTextChange = useDebounce(async e => {
         const {value} = e.target
         const reqPage = {
+            seourl,
             content: value,
-            secret,
-            seourl
         }
 
         let result;
         if (isNewPage) {
-            const url = generateShortLink()
-            setSharedUrl(url)
             setIsNewPage(false)
-            result = await createPage({sharedUrl: url, ...reqPage})
+            reqPage['sharedUrl'] = sharedUrl
+            result = await createPage(reqPage)
         } else {
-            result = await changePage(reqPage)
+            result = await changePage(reqPage,password)
         }
 
         if (result.code === 200) {
@@ -70,7 +68,7 @@ export default function Page() {
                 event.returnValue = '';
             });
         }
-    }, 3000)
+    }, 1000)
 
     return (
         <>
@@ -105,7 +103,7 @@ export default function Page() {
                     }}/>
                     <TextField
                         ref={textareaEl}
-                        rows={25}
+                        rows={20}
                         variant="standard"
                         placeholder="开始输入"
                         multiline

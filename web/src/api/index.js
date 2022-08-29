@@ -1,7 +1,6 @@
 import {deleteRequest, getRequest, postRequest, putRequest} from "@/api/reqest.js";
 
-const apiUrl = import.meta.env.VITE_API_URL+'/'
-const passwordUrl = '/password'
+const apiUrl = import.meta.env.VITE_API_URL + '/'
 
 export const getPageHead = async (seourl) => {
     const resp = await fetch(apiUrl + seourl, {
@@ -10,10 +9,12 @@ export const getPageHead = async (seourl) => {
     return resp
 }
 
-export const getPage = async (seourl, secret) => {
+export const getPage = async (seourl, password) => {
     const option = {
         url: apiUrl + seourl,
-        secret
+        headers: {
+            'x-password': password,
+        },
     }
     return await getRequest(option)
 }
@@ -26,43 +27,35 @@ export const getSharedPage = async (sharedUrl) => {
 }
 
 export const createPage = async (page) => {
+    const {seourl, ...body} = page
     const option = {
         url: apiUrl + page.seourl,
-        data: {content: page.content,sharedUrl: page.sharedUrl}
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body
     }
     return await postRequest(option)
 }
 
-export const changePage = async (page) => {
+export const changePage = async (page, password) => {
+    const {seourl, ...body} = page
     const option = {
         url: apiUrl + page.seourl,
-        secret: page.secret,
-        data: {...page}
+        headers: {
+            'x-password': password,
+            'Content-Type': 'application/json'
+        },
+        body
     }
     return await putRequest(option)
 }
 
-export const destroyPage = async (seourl, secret) => {
+export const destroyPage = async (seourl, password) => {
     const option = {
         url: apiUrl + seourl,
-        secret,
+        headers: {'x-password': password}
     }
     return await deleteRequest(option)
 }
 
-export const addPagePassword = async (seourl, secret) => {
-    const option = {
-        url: apiUrl + passwordUrl,
-        data: {seourl, newPassword: secret}
-    }
-
-    return await postRequest(option)
-}
-
-export const removePagePassword = async (seourl, secret) => {
-    const option = {
-        url: apiUrl + passwordUrl,
-        data: {seourl, oldPassword: secret}
-    }
-    return await deleteRequest(option)
-}
