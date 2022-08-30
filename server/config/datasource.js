@@ -4,11 +4,11 @@ const sqliteConfig = {
 }
 
 const mysqlConfig = {
-    database:'onepage',
-    username:'root',
-    password:'123456',
-    host: 'localhost',
+    database: 'onepage',
+    username: process.env.MYSQL_USER || 'root',
+    password: process.env.MYSQL_KEY || '123456',
+    host: process.env.MYSQL_HOST || 'localhost',
     dialect: 'mysql'
 }
 
-export const dbConfig = mysqlConfig
+export const dbConfig = process.env.ENABLE_MYSQL ? mysqlConfig : sqliteConfig

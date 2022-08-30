@@ -38,7 +38,6 @@ export default function Home() {
 
     return (
         <>
-            <CssBaseline/>
             <Container maxWidth="sm" sx={{
                 display: 'flex',
                 flexDirection: 'column',

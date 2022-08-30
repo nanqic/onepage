@@ -1,11 +1,12 @@
 {
   "name": "onepage-server",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "description": "",
   "main": "./bin/www",
   "type": "module",
   "scripts": {
-    "dev": "npx nodemon",
+    "start": "node ./bin/www",
+    "dev": "npx nodemon --require dotenv/config ./bin/www",
     "test": "mocha ./tests"
   },
   "keywords": [],

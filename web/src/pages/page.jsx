@@ -9,6 +9,8 @@ import Box from "@mui/material/Box";
 import TextField from "@mui/material/TextField";
 import {generateShortLink} from "@/utils/shortUrl.js";
 import SyncIcon from '@mui/icons-material/Sync';
+import Container from "@mui/material/Container";
+import {useMediaQuery} from "@mui/material";
 
 export default function Page() {
     const [isNewPage, setIsNewPage] = useState(true)
@@ -21,11 +23,15 @@ export default function Page() {
     const [syncColor, setSyncColor] = useState("#ccc")
     const pageObj = {isNewPage, seourl, sharedUrl, password, setContent, textareaEl, hasPassword, setHasPassword,}
     const navigate = useNavigate();
-
+    const matchMd = useMediaQuery('(min-width:600px)');
+    const [textareaRow, setTextareaRow] = useState(25)
     useEffect(() => {
         if (seourl.length < 3) {
             navigate('/404')
         }
+        console.log(screen.height)
+        if (!matchMd) setTextareaRow(calcRow)
+
         const initData = async () => {
             // console.log('get',seourl) //调用两次，以后再优化
             let resp = await getPage(seourl, password)
@@ -41,6 +47,16 @@ export default function Page() {
         initData()
     }, [seourl])
 
+    function calcRow(){
+        const {height} = screen
+        if (height>700 && height<800){
+            return 26
+        } else if(height>=800){
+            return 31
+        }else{
+            return 23
+        }
+    }
 
     const handleTextChange = useDebounce(async e => {
         const {value} = e.target
@@ -70,40 +86,40 @@ export default function Page() {
         }
     }, 1000)
 
+
     return (
-        <>
+        <Container maxWidth="lg" sx={{padding:0}}>
             <Box
                 sx={{
                     bgcolor: '#ebeef2',
                     display: 'flex',
                     flexWrap: 'wrap',
-                    pb: 7,
+                    pb: matchMd?6:0.2,
                     '& > :not(style)': {
                         m: 1,
                         width: '100%',
                     },
                 }}
             >
-                <Prompt promptList={editablePromptList}/>
+                {matchMd?<Prompt promptList={editablePromptList}/>:null}
                 <Box
                     sx={{
+                        position: 'relative',
                         bgcolor: 'background.paper',
                         boxShadow: 1,
-                        borderRadius: 2,
                         p: 2,
                         minWidth: 300,
-                        width: '98%',
                     }}
                 >
                     <SyncIcon sx={{
                         position: 'absolute',
                         color: syncColor,
-                        right: '2rem',
-                        top: '5rem'
+                        right: '1rem',
+                        top: '1rem'
                     }}/>
                     <TextField
                         ref={textareaEl}
-                        rows={20}
+                        rows={textareaRow}
                         variant="standard"
                         placeholder="开始输入"
                         multiline
@@ -115,7 +131,7 @@ export default function Page() {
                     <Controls {...pageObj} />
                 </Box>
             </Box>
-        </>
+        </Container>
     )
 }
 
