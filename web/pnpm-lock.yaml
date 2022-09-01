@@ -3,7 +3,6 @@ lockfileVersion: 5.4
 specifiers:
   '@emotion/react': ^11.10.0
   '@emotion/styled': ^11.10.0
-  '@fatewa/kinnara': ^1.0.6
   '@mui/icons-material': ^5.8.4
   '@mui/material': ^5.10.1
   '@types/react': ^18.0.17
@@ -18,7 +17,6 @@ specifiers:
 dependencies:
   '@emotion/react': 11.10.0_ug65io7jkbhmo4fihdmbrh3ina
   '@emotion/styled': 11.10.0_lzabd6uj4wst47copsenr4b56q
-  '@fatewa/kinnara': 1.0.6
   '@mui/icons-material': 5.8.4_uxiimzjvigalxf5okfzuivgjva
   '@mui/material': 5.10.1_sqzxty2p7kxc2tmue4tecplwku
   react: 18.2.0
@@ -433,10 +431,6 @@ packages:
     requiresBuild: true
     dev: true
     optional: true
-
-  /@fatewa/kinnara/1.0.6:
-    resolution: {integrity: sha512-A+OFtVsjUWmmidxsUD8MSCrcuh2wVRS7guIZGWOxF2UI/7QiJrEoar5NHMeOX5cNIvf6z5gvq19U4DLh4l2h5g==}
-    dev: false
 
   /@jridgewell/gen-mapping/0.1.1:
     resolution: {integrity: sha512-sQXCasFk+U8lWYEe66WxRDOE9PjVz4vSM51fTu3Hw+ClTpUSQb718772vH3pyS5pShp6lvQM7SxgIDXXXmOX7w==}

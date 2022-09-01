@@ -1,5 +1,5 @@
 import SimpleDialog from './simple-dialog.jsx';
-import {useState, useEffect} from 'react';
+import {useState, useEffect, useContext} from 'react';
 import {changePage, destroyPage, getPage, getPageHead} from '../api/index'
 import {useNavigate} from "react-router-dom";
 import SnackAlert from './snack-alert';
@@ -14,17 +14,22 @@ import SpeedDialAction from '@mui/material/SpeedDialAction';
 import FileCopyIcon from '@mui/icons-material/FileCopyOutlined';
 import ShareIcon from '@mui/icons-material/Share';
 import {Delete, Edit, EnhancedEncryption, LockOpen} from "@mui/icons-material";
+import {useMediaQuery} from "@mui/material";
 
 
 export default function Controls(props) {
-    const {isNewPage, seourl, sharedUrl, hasPassword, setHasPassword, password, textareaEl, setContent} = props
+    const {isNewPage, seourl, sharedUrl, hasPassword, setHasPassword, password,content, setContent} = props
     const [control, setControl] = useState({})
     const navigate = useNavigate();
+    const matchMd = useMediaQuery('(min-width:600px)');
+
 
     useEffect(() => {
         if (hasPassword && password === "") {
             setControl({inputDialog: needPwDialog})
         }
+
+        setControl({snackbar: {open: false}})
     }, [props])
 
     const needPwDialog = {
@@ -35,7 +40,6 @@ export default function Controls(props) {
         submit: handleNeedPwSubmit
     }
 
-    const getContent = () => textareaEl.current.firstChild.firstChild.value
 
     const removePwDialog = {
         inputType: 'password',
@@ -123,7 +127,7 @@ export default function Controls(props) {
     }
 
     async function handleDestroySubmit(value) {
-        const doDestroy = async ()=>{
+        const doDestroy = async () => {
             const destroyResult = await destroyPage(seourl, password)
             if (destroyResult.code === 200) {
                 setControl({
@@ -135,7 +139,7 @@ export default function Controls(props) {
         }
 
         // 如果没有密码，直接销毁
-        if (value===undefined){
+        if (value === undefined) {
             await doDestroy()
             return;
         }
@@ -192,7 +196,7 @@ export default function Controls(props) {
     }
 
     const handleCopyToClipboard = () => {
-        copyTextToClipboard(getContent())
+        copyTextToClipboard(content)
         setControl({snackbar: {open: true, style: 'success', info: '页面内容已复制到剪切板'}})
     }
 
@@ -206,30 +210,35 @@ export default function Controls(props) {
             name: hasPassword ? "移除密码" : "添加密码",
             handler: () => setControl({inputDialog: hasPassword ? removePwDialog : addPwDialog})
         },
-        {icon: <Delete/>, name: '销毁页面', handler: () => setControl( hasPassword ?{inputDialog:destroyPwDialog}: {simpleDialog:destroyDialog})}
+        {
+            icon: <Delete/>,
+            name: '销毁页面',
+            handler: () => setControl(hasPassword ? {inputDialog: destroyPwDialog} : {simpleDialog: destroyDialog})
+        }
     ];
     return (
-        <>
+        <Box sx={{
+            position: 'absolute',
+            bottom: matchMd?-5:30,
+            right: matchMd?32:20
+        }}>
             <SimpleDialog {...control.simpleDialog} />
             <SnackAlert {...control.snackbar} />
             {control.inputDialog === undefined ? "" : <InputDialog {...control.inputDialog} />}
-            <Box sx={{height: 66, transform: 'translateZ(0px)', flexGrow: 1}}>
-                {isNewPage ? "" :
-                    <SpeedDial
-                        ariaLabel="SpeedDial basic"
-                        sx={{position: 'absolute', bottom: -6, right: 16}}
-                        icon={<SpeedDialIcon/>}
-                    >
-                        {actions.map((action) => (
-                            <SpeedDialAction
-                                key={action.name}
-                                icon={action.icon}
-                                tooltipTitle={action.name}
-                                onClick={action.handler}
-                            />
-                        ))}
-                    </SpeedDial>}
-            </Box>
-        </>
+            {isNewPage ? "" :
+                <SpeedDial
+                    ariaLabel="SpeedDial"
+                    icon={<SpeedDialIcon/>}
+                >
+                    {actions.map((action) => (
+                        <SpeedDialAction
+                            key={action.name}
+                            icon={action.icon}
+                            tooltipTitle={action.name}
+                            onClick={action.handler}
+                        />
+                    ))}
+                </SpeedDial>}
+        </Box>
     )
 }
